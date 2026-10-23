@@ -224,6 +224,7 @@ class PrivateKey(object):
         self.key = None
         self._pem_bytes = None
         self.filename = filename
+        self.pubkey_files = []
         self._init_fields(p, q, e, n, d, phi)
         self._compute_phi()
         self._compute_d(e)

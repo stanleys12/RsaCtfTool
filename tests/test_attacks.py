@@ -163,6 +163,29 @@ class TestCommonFactorsAttack:
         )
         assert result.returncode == 0
 
+    def test_commonfactors_labels_each_key(self, tmp_path):
+        output = tmp_path / "keys.txt"
+        result = _run(
+            "--publickey",
+            "examples/commonfactor*.pub",
+            "--private",
+            "--attack",
+            "common_factors",
+            "--output",
+            str(output),
+        )
+        assert result.returncode == 0
+        keys = output.read_text()
+        assert "examples/commonfactor3.pub:\n-----BEGIN RSA" in keys
+        assert "examples/commonfactor8.pub:\n-----BEGIN RSA" in keys
+        assert "Testing key examples/commonfactor3.pub" not in result.stderr
+        assert "Testing key examples/commonfactor8.pub" not in result.stderr
+
+    def test_wildcard_without_match(self):
+        result = _run("--publickey", "examples/nomatch*.pub", "--private")
+        assert result.returncode == 1
+        assert "No file matches examples/nomatch*.pub" in result.stderr
+
 
 class TestCommonModulusRelatedMessageAttack:
     def test_common_modulus_related_message_attack(self):

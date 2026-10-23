@@ -65,9 +65,14 @@ def _print_private_key(args, private_keys, logger):
     for priv_key in private_keys:
         if priv_key is None:
             continue
+        label = ", ".join(priv_key.pubkey_files)
+        if label:
+            logger.info(f"{label}:")
         if args.output:
             try:
                 with open(args.output, "a") as output_fd:
+                    if label:
+                        output_fd.write(f"{label}:\n")
                     output_fd.write("%s\n" % str(priv_key))
             except Exception:
                 logger.error(f"Can't write output file : {args.output}")

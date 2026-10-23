@@ -25,6 +25,7 @@ class RSAAttack(object):
         self.priv_key = None
         self.priv_keys = []
         self.decrypted = []
+        self.cracked_files = set()
         self.implemented_attacks = []
 
     def get_boolean_results(self):
@@ -251,6 +252,17 @@ class RSAAttack(object):
                     self.logger.error(
                         f"[!] {attack_module.get_name()}: {type(e).__name__}: {e}"
                     )
+
+        pubkey_files = {}
+        for pub in publickeys_obj:
+            pubkey_files.setdefault(pub.n, []).append(pub.filename)
+        priv_keys = (
+            self.priv_key if isinstance(self.priv_key, list) else [self.priv_key]
+        )
+        for priv_key in priv_keys:
+            if priv_key is not None and priv_key.n in pubkey_files:
+                priv_key.pubkey_files = pubkey_files[priv_key.n]
+                self.cracked_files.update(priv_key.pubkey_files)
 
         public_key_name = ",".join(publickeys)
         self.print_results_details(public_key_name)
